@@ -5,8 +5,8 @@ require 'redmine_sudo/hooks'
 # - redmine plugins are not railties nor engines, so deface overrides are not detected automatically
 # - deface doesn't support direct loading anymore ; it unloads everything at boot so that reload in dev works
 # - hack consists in adding "app/overrides" path of the plugin in Redmine's main #paths
-Rails.application.paths["app/overrides"] ||= []
-Rails.application.paths["app/overrides"] << File.expand_path("../app/overrides", __FILE__)
+# Rails.application.paths["app/overrides"] ||= []
+# Rails.application.paths["app/overrides"] << File.expand_path("../app/overrides", __FILE__)
 
 # Patches to existing classes/modules
 ActionDispatch::Callbacks.to_prepare do
@@ -27,4 +27,6 @@ Redmine::Plugin.register :redmine_sudo do
     'become_user' => '[sudo -k]',
     'additional_css' => "#top-menu { background-color:#BA0C03; }\n#header { background-color:#dd0037; }\n#main-menu li a { background-color:#BA0C03; }\n#main-menu li a:hover { background-color:#8D0A02; }",
   }, :partial => 'settings/redmine_sudo_settings'
+  
+  menu :account_menu,  :sudo_menu , { :controller => 'sudo', :action => 'toggle' }, :caption => 'SUDO' , :if =>  Proc.new { User.current.sudoer? }
 end
